@@ -1,0 +1,8 @@
+/dist/
+**/bin/
+**/obj/
+*.dll
+*.mzp
+*.max
+*.log
+
