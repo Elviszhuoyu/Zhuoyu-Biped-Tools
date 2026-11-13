@@ -271,9 +271,7 @@ f_limbObject
 f_changePivot
 f_getPivotIndex
 f_isValidBiped
-f_isNearOrigin
 f_trajectoryHelpersDelete
-f_addTrajToBipedSurface
 f_addTrajectoryHelper
 f_linearAttach
 f_removePoseBuffer
@@ -1229,17 +1227,6 @@ fn f_isValidBiped =
 /**
 	Function to detect objects near [0,0,0] within a tolerance
 */
-fn f_isNearOrigin obj tolerance:0.001 =
-(
-	if abs(obj.position.x) < tolerance AND abs(obj.position.y) < tolerance AND abs(obj.position.z) < tolerance then
-	(
-		return true
-	)
-	return false
-),
-
-/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/		
-
 fn f_trajectoryHelpersDelete query:true =
 (
 	local deleteConfirmed = false
@@ -1269,14 +1256,36 @@ fn f_trajectoryHelpersDelete query:true =
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
--- @UPSTREAM_SURFACE_HELPER@
 fn f_addTrajectoryHelper &pt =
 (
-	pt = point size:0.1
-	pt.axistripod = off
-	pt.box = off
-	pt.cross = on
-	g_ZYLB_BH.f_addTrajToBipedSurface pt
+    fn isBipedSurface node = isValidNode node and classOf node.baseObject == Biped_Object
+    fn surfaceClick event hit node face shift ctrl alt =
+    (
+        case event of
+        (
+            #mousePoint: (if hit != undefined then hit else #continue)
+            #mouseAbort: undefined
+            default: #continue
+        )
+    )
+    local target = pickObject message:"选择一个 Biped 部件" forceListenerFocus:false filter:isBipedSurface
+    if not isValidNode target do return false
+    local hit = mouseTrack on:target prompt:"点击 Biped 部件表面放置轨迹辅助点" trackCallback:surfaceClick
+    if classOf hit != Ray or not isValidNode target do return false
+    undo "Place Biped trajectory helper" on
+    (
+        pt = point name:(uniqueName ("TRAJ_" + target.name)) size:0.1 box:false cross:true
+        pt.parent = target
+        pt.pos = hit.pos
+        pt.dir = hit.dir
+        local trajectoryLayer = layerManager.getLayerFromName "BIPED_TRAJECTORIES"
+        if trajectoryLayer == undefined do trajectoryLayer = layerManager.newLayerFromName "BIPED_TRAJECTORIES"
+        trajectoryLayer.addNode pt
+        setTrajectoryOn pt true
+        freeze pt
+        setTransformLockFlags pt #{1..9}
+    )
+    true
 ),
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/		
@@ -4069,10 +4078,6 @@ fn f_bipedHelperUI =
 			if state then
 			(
 				g_ZYLB_BH.f_addTrajectoryHelper &pt
-			)
-			if pt != undefined AND g_ZYLB_BH.f_isNearOrigin pt then --// In case of right-click to cancel
-			(
-				delete pt
 			)
 			chkbtn_addTrajHelper.state = false
 			local layerBipedTrajectories = layerManager.getLayerFromName "BIPED_TRAJECTORIES"
@@ -8011,7 +8016,7 @@ fn f_bipedHelperUI =
 		(
 			--// Floater definition
 			try(closeRolloutFloater g_ZYLB_BH.bipedUI_Floater)catch()
-			g_ZYLB_BH.bipedUI_Floater = newRolloutFloater "LB Biped 助手 3.5 · 本地 1.9.8" 220 730
+			g_ZYLB_BH.bipedUI_Floater = newRolloutFloater "LB Biped 助手 3.5 · 本地 1.9.9" 220 730
 			g_ZYLB_BH.bipedUI_Floater.pos = g_ZYLB_BH.BH_pos
 			addRollout g_ZYLB_BH.SelectionDisplayTime_Rollout g_ZYLB_BH.bipedUI_Floater rolledup:false
 			addRollout g_ZYLB_BH.Keys_Rollout g_ZYLB_BH.bipedUI_Floater rolledup:true
@@ -8038,7 +8043,7 @@ fn f_bipedHelperUI =
 
 fn f_bipedPickerUI =
 (
-	rollout BipedPicker_Rollout "LB Biped 选择器 3.5 · 本地 1.9.8"
+	rollout BipedPicker_Rollout "LB Biped 选择器 3.5 · 本地 1.9.9"
 	(
         button btn_ZYLanguage "中文 / EN" width:88 height:24 across:3 align:#left tooltip:"切换中英文并保留参数。"
         button btn_ZYGuide "使用指南" width:88 height:24 align:#center tooltip:"打开选择器操作指南和图标说明。"
@@ -11317,10 +11322,6 @@ fn f_bipedPickerUI =
 			(
 				g_ZYLB_BH.f_addTrajectoryHelper &pt
 			)
-			if pt != undefined AND g_ZYLB_BH.f_isNearOrigin pt then --// In case of right-click to cancel
-			(
-				delete pt
-			)
 			chkbtn_addTrajHelper.state = false
 			local layerBipedTrajectories = layerManager.getLayerFromName "BIPED_TRAJECTORIES"
 			if layerBipedTrajectories != undefined then
@@ -11493,7 +11494,7 @@ g_ZYLB_BH = s_ZYLB_bipedHelper()
 
 macroScript ZYLB_bipedHelper
 	category:"Zhuoyu Biped"
-	buttontext:"完整 Biped 助手 1.9.8"
+	buttontext:"完整 Biped 助手 1.9.9"
 	icon:#("ZYLB_BipedHelper",1)
 	tooltip:"完整 Biped 助手：中文 / English"
 (
@@ -11511,7 +11512,7 @@ macroScript ZYLB_bipedHelper
 
 macroScript ZYLB_bipedHelperPicker
 	category:"Zhuoyu Biped"
-	buttontext:"Biped 选择器 1.9.8"
+	buttontext:"Biped 选择器 1.9.9"
 	icon:#("ZYLB_BipedHelper_Picker",1)
 	tooltip:"Biped 选择器：中文 / English"
 (

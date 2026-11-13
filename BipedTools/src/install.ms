@@ -21,7 +21,7 @@
  -- 首次安装与旧版留下的半成品配置均补齐；已有设置保留。
  if getIniSetting ini "Picker" "Height" == "" do setIniSetting ini "Picker" "Height" "1"
  if getIniSetting ini "BipedPanel" "CurrentBip" == "" do setIniSetting ini "BipedPanel" "CurrentBip" "1"
- setIniSetting ini "LocalVersion" "Layout" "1.9.8"
+ setIniSetting ini "LocalVersion" "Layout" "1.9.9"
  -- 退役本工具旧轨迹宏，保留文件备份；不修改 BsKeyTools。
  local retiredMacro=(getDir #userMacros)+@"\Zhuoyu Biped-ZYBiped_Trail.mcr"
  if doesFileExist retiredMacro do
@@ -36,6 +36,6 @@
  fileIn startupFile
  colorMan.reInitIcons()
  fileIn (targetRoot+"ZYBiped_Launcher.ms")
- format "Zhuoyu Biped Tools 1.9.8 installed: %\n" targetRoot
+ format "Zhuoyu Biped Tools 1.9.9 installed: %\n" targetRoot
  targetRoot
 )

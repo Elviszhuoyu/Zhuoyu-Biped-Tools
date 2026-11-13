@@ -1,6 +1,6 @@
 ﻿-- Shared build for Max 2020-2027.
 if (maxVersion())[1]<22000 do throw "Zhuoyu Biped Tools requires Max 2020 or newer."
--- 本地语言分支 1.9.8，基于 Lorne Brooks Biped Helper 3.5（2024-06-18）。
+-- 本地语言分支 1.9.9，基于 Lorne Brooks Biped Helper 3.5（2024-06-18）。
 -- 作者已在原源码声明允许修改及分发；原作者署名与版本记录完整保留。
 -- 沿用原 Biped 关键帧 API；本地选择记录单独存储，不修改节点名称、父级或 Skin。
 global g_ZYLB_BH, ZYLB_CN, ZYLB_IconDir, ZYLB_StateSpecs

@@ -271,9 +271,7 @@ f_limbObject
 f_changePivot
 f_getPivotIndex
 f_isValidBiped
-f_isNearOrigin
 f_trajectoryHelpersDelete
-f_addTrajToBipedSurface
 f_addTrajectoryHelper
 f_linearAttach
 f_removePoseBuffer
@@ -1229,17 +1227,6 @@ fn f_isValidBiped =
 /**
 	Function to detect objects near [0,0,0] within a tolerance
 */
-fn f_isNearOrigin obj tolerance:0.001 =
-(
-	if abs(obj.position.x) < tolerance AND abs(obj.position.y) < tolerance AND abs(obj.position.z) < tolerance then
-	(
-		return true
-	)
-	return false
-),
-
-/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/		
-
 fn f_trajectoryHelpersDelete query:true =
 (
 	local deleteConfirmed = false
@@ -1269,14 +1256,36 @@ fn f_trajectoryHelpersDelete query:true =
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
--- @UPSTREAM_SURFACE_HELPER@
 fn f_addTrajectoryHelper &pt =
 (
-	pt = point size:0.1
-	pt.axistripod = off
-	pt.box = off
-	pt.cross = on
-	g_ZYLB_BH.f_addTrajToBipedSurface pt
+    fn isBipedSurface node = isValidNode node and classOf node.baseObject == Biped_Object
+    fn surfaceClick event hit node face shift ctrl alt =
+    (
+        case event of
+        (
+            #mousePoint: (if hit != undefined then hit else #continue)
+            #mouseAbort: undefined
+            default: #continue
+        )
+    )
+    local target = pickObject message:"Pick a Biped part" forceListenerFocus:false filter:isBipedSurface
+    if not isValidNode target do return false
+    local hit = mouseTrack on:target prompt:"Click the Biped surface to place a trajectory helper" trackCallback:surfaceClick
+    if classOf hit != Ray or not isValidNode target do return false
+    undo "Place Biped trajectory helper" on
+    (
+        pt = point name:(uniqueName ("TRAJ_" + target.name)) size:0.1 box:false cross:true
+        pt.parent = target
+        pt.pos = hit.pos
+        pt.dir = hit.dir
+        local trajectoryLayer = layerManager.getLayerFromName "BIPED_TRAJECTORIES"
+        if trajectoryLayer == undefined do trajectoryLayer = layerManager.newLayerFromName "BIPED_TRAJECTORIES"
+        trajectoryLayer.addNode pt
+        setTrajectoryOn pt true
+        freeze pt
+        setTransformLockFlags pt #{1..9}
+    )
+    true
 ),
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/		
@@ -4067,10 +4076,6 @@ fn f_bipedHelperUI =
 			if state then
 			(
 				g_ZYLB_BH.f_addTrajectoryHelper &pt
-			)
-			if pt != undefined AND g_ZYLB_BH.f_isNearOrigin pt then --// In case of right-click to cancel
-			(
-				delete pt
 			)
 			chkbtn_addTrajHelper.state = false
 			local layerBipedTrajectories = layerManager.getLayerFromName "BIPED_TRAJECTORIES"
@@ -11313,10 +11318,6 @@ fn f_bipedPickerUI =
 			if state then
 			(
 				g_ZYLB_BH.f_addTrajectoryHelper &pt
-			)
-			if pt != undefined AND g_ZYLB_BH.f_isNearOrigin pt then --// In case of right-click to cancel
-			(
-				delete pt
 			)
 			chkbtn_addTrajHelper.state = false
 			local layerBipedTrajectories = layerManager.getLayerFromName "BIPED_TRAJECTORIES"

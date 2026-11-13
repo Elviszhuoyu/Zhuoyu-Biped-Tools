@@ -1,6 +1,6 @@
 ﻿macroScript ZYLB_bipedHelper
 	category:"Zhuoyu Biped"
-	buttontext:"完整 Biped 助手 1.9.8"
+	buttontext:"完整 Biped 助手 1.9.9"
 	icon:#("ZYLB_BipedHelper",1)
 	tooltip:"完整 Biped 助手：中文 / English"
 (

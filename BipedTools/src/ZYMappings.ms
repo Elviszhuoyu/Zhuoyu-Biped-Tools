@@ -242,7 +242,7 @@ fn ZYMapDelete =
  )
 )
 fn ZYMapDirtyRefresh = (ZYMapRefreshConfig();ZYPickerSync())
-rollout ZYMapUI "角色控制器绑定 · 1.9.8" width:484 height:600
+rollout ZYMapUI "角色控制器绑定 · 1.9.9" width:484 height:600
 (
  label context "当前角色：" pos:[14,12] width:456 height:20
  dropdownlist groupList "编辑组" pos:[14,38] width:456 height:42
@@ -326,7 +326,7 @@ fn ZYSideClick i edit:false modifiers:undefined =
  true
 )
 fn ZYSideTurn delta = (ZYSidePage+=delta;ZYSideRefresh();ZYSideSave())
-rollout ZYSideUI "自定义按钮 · 1.9.8" width:300 height:264
+rollout ZYSideUI "自定义按钮 · 1.9.9" width:300 height:264
 (
  label context "当前角色" pos:[12,10] width:276 height:18
  checkbutton cell1 "+ 新建组" pos:[12,38] width:62 height:40

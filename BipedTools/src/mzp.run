@@ -1,4 +1,4 @@
-﻿name "Zhuoyu Biped Tools"
-version 1.98
+name "Zhuoyu Biped Tools"
+version 1.99
 run "install.ms"
 drop "install.ms"

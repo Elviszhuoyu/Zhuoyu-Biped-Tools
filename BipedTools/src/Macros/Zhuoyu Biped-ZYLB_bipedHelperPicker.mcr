@@ -1,6 +1,6 @@
 ﻿macroScript ZYLB_bipedHelperPicker
 	category:"Zhuoyu Biped"
-	buttontext:"Biped 选择器 1.9.8"
+	buttontext:"Biped 选择器 1.9.9"
 	icon:#("ZYLB_BipedHelper_Picker",1)
 	tooltip:"Biped 选择器：中文 / English"
 (
